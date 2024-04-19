@@ -1,0 +1,76 @@
+import groovy.text.SimpleTemplateEngine
+import groovy.text.Template
+import com.github.zafarkhaja.semver.Version
+import org.ajoberstar.grgit.Commit
+import org.ajoberstar.gradle.git.release.semver.ChangeScope
+import org.ajoberstar.gradle.git.release.base.ReleaseVersion
+import de.gliderpilot.gradle.semanticrelease.SemanticReleasePlugin
+
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+
+    dependencies {
+        classpath("de.gliderpilot.semantic-release:de.gliderpilot.semantic-release.gradle.plugin:1.4.2")
+    }
+}
+
+apply plugin: 'maven-publish'
+apply plugin: SemanticReleasePlugin
+
+allprojects {
+    tasks.withType(Task).tap {
+        configureEach {
+            if (it.name.toLowerCase().contains("github")) {
+                onlyIf {
+                    !version.toString().endsWith("SNAPSHOT")
+                }
+            }
+        }
+    }
+}
+
+def majorKeys = ["feat!", "fix!", "chore!"]
+def minorKeys = ["minor", "feat", "task"]
+def patchKeys = ["patch", "chore", "fix"]
+
+semanticRelease {
+    releaseBranches {
+        include "main"
+    }
+
+    repo {
+        ghToken = System.getenv("GITHUB_TOKEN")
+    }
+
+    changeLog {
+        changeScope = { Commit commit ->
+            changeLog.getOwner().type(commit) in majorKeys ? ChangeScope.MAJOR
+                    : changeLog.getOwner().type(commit) in minorKeys ? ChangeScope.MINOR
+                    : changeLog.getOwner().type(commit) in patchKeys ? ChangeScope.PATCH : null
+        }
+
+        def byTypeGroupByComponent = { List<Commit> commits, List<String> typeFilter ->
+            commits.findAll {
+                changeLog.getOwner().type(it) in typeFilter
+            }.groupBy(changeLog.getOwner().component).sort { a, b -> a.key <=> b.key }
+        }
+
+        changeLog = { List<Commit> commits, ReleaseVersion version ->
+            String previousVersion = Version.valueOf(version.previousVersion).majorVersion ? version.previousVersion : null
+            String previousTag = changeLog.getOwner().tagStrategy.toTagString(previousVersion)
+            String currentTag = version.createTag ? changeLog.getOwner().tagStrategy.toTagString(version.version) : null
+            Template template = new SimpleTemplateEngine().createTemplate(new File("changelog.md"))
+            template.make([
+                    versionUrl: repo.diffUrl(previousTag, currentTag),
+                    service   : changeLog.getOwner(),
+                    version   : version.version,
+                    major     : byTypeGroupByComponent(commits, majorKeys),
+                    minor     : byTypeGroupByComponent(commits, minorKeys),
+                    patch     : byTypeGroupByComponent(commits, patchKeys),
+                    date      : new java.sql.Date(System.currentTimeMillis()).toString()
+            ])
+        }
+    }
+}
