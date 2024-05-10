@@ -1,0 +1,26 @@
+import com.github.spotbugs.snom.SpotBugsPlugin
+
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+
+    dependencies {
+        classpath("com.github.spotbugs:com.github.spotbugs.gradle.plugin:6.0.14")
+    }
+}
+
+apply plugin: SpotBugsPlugin
+apply plugin: 'checkstyle'
+
+tasks.checkstyleTest {
+    configFile = file("${rootDir}/config/checkstyle/checkstyle-test.xml")
+}
+
+tasks.spotbugsMain {
+    excludeFilter = file("${rootDir}/config/spotbugs/spotbugs-exclude.xml")
+}
+
+tasks.spotbugsTest {
+    excludeFilter = file("${rootDir}/config/spotbugs/spotbugs-exclude-test.xml")
+}
