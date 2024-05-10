@@ -1,0 +1,21 @@
+apply plugin: 'jacoco'
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events("passed", "failed", "skipped")
+    }
+
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+
+    reports {
+        xml.required = true
+        xml.outputLocation = layout.buildDirectory.file("reports/jacoco/jacoco-coverage-report.xml").get().asFile
+        html.outputLocation = layout.buildDirectory.dir("reports/jacoco/html").get().asFile
+    }
+}
