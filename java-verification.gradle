@@ -3,6 +3,7 @@ import com.github.spotbugs.snom.SpotBugsPlugin
 buildscript {
     repositories {
         gradlePluginPortal()
+        jcenter()
     }
 
     dependencies {

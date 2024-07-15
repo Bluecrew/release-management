@@ -9,6 +9,7 @@ import de.gliderpilot.gradle.semanticrelease.SemanticReleasePlugin
 buildscript {
     repositories {
         gradlePluginPortal()
+        jcenter()
     }
 
     dependencies {
