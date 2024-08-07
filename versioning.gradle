@@ -9,7 +9,10 @@ import de.gliderpilot.gradle.semanticrelease.SemanticReleasePlugin
 buildscript {
     repositories {
         gradlePluginPortal()
-        jcenter()
+        maven {
+            name = 'ajoberstar-backup'
+            url = 'https://ajoberstar.org/bintray-backup/'
+        }
     }
 
     dependencies {

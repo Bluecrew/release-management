@@ -3,7 +3,10 @@ import com.github.spotbugs.snom.SpotBugsPlugin
 buildscript {
     repositories {
         gradlePluginPortal()
-        jcenter()
+        maven {
+            name = 'ajoberstar-backup'
+            url = 'https://ajoberstar.org/bintray-backup/'
+        }
     }
 
     dependencies {
