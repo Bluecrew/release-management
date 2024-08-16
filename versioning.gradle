@@ -41,7 +41,7 @@ def patchKeys = ["patch", "chore", "fix"]
 
 semanticRelease {
     releaseBranches {
-        include "main"
+        include "main", "mainline"
     }
 
     repo {
