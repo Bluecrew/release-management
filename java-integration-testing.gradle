@@ -1,0 +1,13 @@
+test.configure {
+    exclude("**/*IntegrationTest*")
+}
+
+tasks.register("verify", Test) {
+    useJUnitPlatform()
+
+    include("**/*IntegrationTest*")
+
+    testLogging {
+        events("passed", "failed", "skipped")
+    }
+}
