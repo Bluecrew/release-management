@@ -37,7 +37,7 @@ allprojects {
 
 def majorKeys = ["feat!", "fix!", "chore!"]
 def minorKeys = ["minor", "feat", "task"]
-def patchKeys = ["patch", "chore", "fix"]
+def patchKeys = ["patch", "chore", "fix", "chore(deps)"]
 
 semanticRelease {
     releaseBranches {
