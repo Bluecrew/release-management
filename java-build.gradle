@@ -1,0 +1,18 @@
+apply plugin: 'java-library'
+
+tasks.register('sourcesJar', Jar) {
+    dependsOn classes
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release.set(17)
+}
+
+java {
+    withSourcesJar()
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
