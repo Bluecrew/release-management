@@ -1,5 +1,7 @@
 apply plugin: 'java-library'
 
+def javaVersion = Integer.valueOf(findProperty('javaVersion') ?: '17')
+
 tasks.register('sourcesJar', Jar) {
     dependsOn classes
     archiveClassifier = 'sources'
@@ -7,12 +9,12 @@ tasks.register('sourcesJar', Jar) {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.release.set(17)
+    options.release.set(javaVersion)
 }
 
 java {
     withSourcesJar()
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 }
